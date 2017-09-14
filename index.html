@@ -1,0 +1,101 @@
+<!-- 
+Autor: Vinicius Zorzanelli
+Versão: 1.0 
+-->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+  </head>
+  <body onload="carregarAtividades()">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
+
+    <script>
+
+        function Atividade( descricao, status){
+            this.id = Math.floor(Math.random() * 1000000000);	
+            this.descricao = descricao;
+            this.status = status;                
+        }
+
+        function adicionarAtividade(){
+            var inputAtividade = document.getElementById("atividade").value;
+            var atividade = new Atividade(inputAtividade,0);
+            var str = JSON.stringify(atividade);
+            localStorage.setItem(atividade.id , str);
+            carregarAtividades();
+        }
+
+        function limparAtividades(){
+            localStorage.clear();
+            carregarAtividades();
+        }
+
+        function atualizarAtividade(id){
+            var str = localStorage.getItem(id);
+            var obj = JSON.parse(str);
+
+            if(obj.status == 1){
+                obj.status = 0;
+            }else{
+                obj.status = 1;
+            }
+
+            str = JSON.stringify(obj);
+            localStorage.setItem(id, str);
+            carregarAtividades();
+        }
+
+        function carregarAtividades(){
+
+            var lista = document.getElementById("tarefas");
+            lista.innerHTML = "" ;
+		    var listaInputs = lista.innerHTML ;
+		
+            for(var key in localStorage){
+                var atividade = localStorage[key];
+                var atividadeObj = JSON.parse(atividade);
+                if(atividadeObj.status == 0){
+                    var input = 
+                    '<label class="custom-control custom-checkbox" id="'+ atividadeObj.id +'"><input type="checkbox" class="custom-control-input" onclick="atualizarAtividade('+ atividadeObj.id +')"><span class="custom-control-indicator"></span><span class="custom-control-description">' + atividadeObj.descricao + '</span></label> <br/>';
+                }else{
+                    var input = 
+                    '<label class="custom-control custom-checkbox" id="'+ atividadeObj.id +'"><input type="checkbox" class="custom-control-input" checked="checked" onclick="atualizarAtividade('+ atividadeObj.id +')"><span class="custom-control-indicator"></span><span class="custom-control-description">' + atividadeObj.descricao + '</span></label><br/>';
+                }
+                listaInputs += input;
+            }
+            lista.innerHTML = listaInputs;
+	    }
+        
+    </script>    
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-inverse bg-inverse">
+        <h1 class="navbar-brand mb-0 text-center">ToDo List</h1>
+    </nav>
+
+    <!-- Input tarefa -->
+    <div class="container py-4">
+        <div class="input-group col-12">
+            <input type="text" class="form-control" placeholder="Atividade" id="atividade">
+            <span class="input-group-btn">
+                <button class="btn btn-secondary" type="button" onclick="adicionarAtividade()">Adicionar</button>
+            </span>
+        </div>
+    </div>
+
+    <!-- Botao limpar -->
+    <div class="container">
+        <button type="button" class="btn btn-danger col-12" onclick="limparAtividades()">Limpar</button>
+    </div>
+
+    <!-- Lista de tarefas -->
+    <div class="container py-4" id="tarefas"></div>
+    
+  </body>
+</html>
